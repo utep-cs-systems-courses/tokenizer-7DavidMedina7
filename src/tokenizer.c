@@ -20,7 +20,6 @@ int non_space_char(char c) {
    space-separated word in zero-terminated str. Return a zero pointer if
    str does not contain any words */
 char *word_start(char *str) {
-  
   while(space_char(*str)) {
     str++; 
     // If it is a non_space - we are done
@@ -33,35 +32,21 @@ char *word_start(char *str) {
 
 /* Returns a pointer terminator char following *word */
 char *word_terminator(char *word) {
-  *word = *word_start(word);
+  word = word_start(word);
   while(non_space_char(*word)) {
     word++;
   }
   return word;
-
 }
 
 /* Counts the number of words in the string argument. */
 int count_words(char *str) {
-
-  int i = 0;
   int num_of_words = 0;
-
-  while(str[i] != '\0') {
-    // This is one word
-    if (non_space_char(str[i]) && space_char(str[i + 1])) {
-      // Increment number of words
-      num_of_words++;
-    }
-    // Increment index val
-    i++;
-  }
-
-  // Checking if there is one last word at the end of the string
-  if (str[i] == '\0' && !space_char(str[i - 1])) {
+  while (*str != '\0') {
+    str = word_start(str);
+    str = word_terminator(str);
     num_of_words++;
   }
- 
   return num_of_words;
 }
 
@@ -71,14 +56,62 @@ char *copy_str(char *inStr, short len) {
   // Allocating the memory we need for our copy of inStr
   // Getting the len provided and mult. times char val
   // Typecast it to char pointer
-  char *copy = (char *)malloc(len * sizeof(char));
+  char *copy = (char *)malloc((len + 1) * sizeof(char));
 
   int i = 0;
   for (i = 0; i < len; i++) {
-    printf("Value of inStr[i]: %c\n", inStr[i]);
     // Copying the char from inStr to our copy
     copy[i] = inStr[i];
   }
-  
+  // Adding the terminator char to the end of our copy
+  copy[i] = '\0';
+
   return copy; 
+}
+
+char **tokenize(char* str) {
+  // Obtaining the number of words in the string
+  int num_of_words = 0;
+  num_of_words = count_words(str);
+
+  // Allocating the memory for the tokens
+  char **tokens = malloc((num_of_words + 1) * sizeof(char*));
+
+  // Iterating through the string and allocating the number of
+  // bytes for each word
+  int i = 0;
+  for (i = 0; i < num_of_words; i++) {
+    // Obtaining the length of the current word by
+    // subtracting addresses
+    char *address_start = word_start(str);
+    char *address_end = word_terminator(str);
+    int len_of_word = address_end - address_start;
+
+    // Storing and creating our token
+    char *current_token = copy_str(address_start, len_of_word);
+    tokens[i] = current_token;
+    str = address_end;
+    printf("Created a token...\n");
+  }
+  // Adding the terminator char to the end of our tokens memory
+  tokens[i] = NULL;
+
+  return tokens;
+}
+
+void print_tokens(char **tokens) {
+  printf("\n--- Printing tokens! ;) ---");
+  // Iterating through the addresses of our tokens
+  // and printing each one
+  int index = 0;
+  while(tokens != NULL) {
+    printf("[%d]: %s\n", index, tokens[index]);
+    tokens++;
+    index++;
+  }
+  printf("\n--- Boom! Tokens boi ---\n");
+}
+
+void free_tokens(char **tokens) {
+  free(tokens);
 }
