@@ -75,7 +75,7 @@ char **tokenize(char* str) {
   num_of_words = count_words(str);
 
   // Allocating the memory for the tokens
-  char **tokens = malloc((num_of_words + 1) * sizeof(char*));
+  char **tokens = (char**)malloc((num_of_words + 1) * sizeof(char*));
 
   // Iterating through the string and allocating the number of
   // bytes for each word
@@ -91,7 +91,7 @@ char **tokenize(char* str) {
     char *current_token = copy_str(address_start, len_of_word);
     tokens[i] = current_token;
     str = address_end;
-    printf("Created a token...\n");
+    printf("Created a token: %s\n", tokens[i]);
   }
   // Adding the terminator char to the end of our tokens memory
   tokens[i] = NULL;
@@ -100,12 +100,12 @@ char **tokenize(char* str) {
 }
 
 void print_tokens(char **tokens) {
-  printf("\n--- Printing tokens! ;) ---");
+  printf("\n--- Printing tokens! ;) ---\n");
   // Iterating through the addresses of our tokens
   // and printing each one
   int index = 0;
-  while(tokens != NULL) {
-    printf("[%d]: %s\n", index, tokens[index]);
+  while(*tokens != NULL) {
+    printf("[%d]: %s\n", index, *tokens);
     tokens++;
     index++;
   }
@@ -113,5 +113,11 @@ void print_tokens(char **tokens) {
 }
 
 void free_tokens(char **tokens) {
+  int i = 0;
+  while(tokens[i]) {
+    printf("Token freed.\n");
+    free(tokens[i]);
+    i++;
+  }
   free(tokens);
 }
